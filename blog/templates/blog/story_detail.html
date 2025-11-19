@@ -1,0 +1,146 @@
+<!-- blog/templates/blog/story_detail.html -->
+{% extends "blog/base.html" %}
+{% load static %}
+
+{% block title %}{{ story.title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    
+    <!-- Заголовок и мета-информация -->
+    <article class="bg-white p-4 rounded shadow-sm">
+      <header class="mb-4">
+        <h1 class="fw-bold">{{ story.title }}</h1>
+        <div class="text-muted fst-italic">
+          <a href="{% url 'blog:user_stories' story.author.username %}" class="text-decoration-none text-muted">
+            <img src="{% if story.author.profile and story.author.profile.avatar %}{{ story.author.profile.avatar.url }}{% else %}{% static 'img/default_avatar.png' %}{% endif %}"
+                 class="rounded-circle me-2" width="30" height="30" alt="" style="object-fit: cover;">
+            {{ story.author.username }}
+          </a>
+          | Опубликовано: {{ story.published_at|date:"d F Y" }}
+          {% if story.category %}
+            | Категория: <a href="{% url 'blog:category_stories' story.category.slug %}" class="text-decoration-none">{{ story.category.name }}</a>
+          {% endif %}
+        </div>
+      </header>
+      
+      {% if story.cover_image %}
+        <img src="{{ story.cover_image_thumbnail.url }}" class="img-fluid rounded mb-4" alt="{{ story.title }}">
+      {% endif %}
+      
+      <div class="story-content fs-5">
+        {{ story.content|safe }}
+      </div>
+
+      <hr class="my-4">
+
+    <!-- Блок с лайками и кнопками автора -->
+     
+      <footer class="d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-3">
+          <form method="post" action="{% url 'blog:story_like' story.slug %}">
+            {% csrf_token %}
+            <button type="submit" class="btn {% if user_likes %}btn-danger{% else %}btn-outline-danger{% endif %} btn-sm">
+              <i class="bi {% if user_likes %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
+              {{ like_count }}
+            </button>
+          </form>
+        </div>
+
+        {% if user.is_authenticated and user == story.author %}
+          <div class="d-flex gap-2">
+            <a href="{% url 'blog:story_update' story.slug %}" class="btn btn-sm btn-info">
+              <i class="bi bi-pencil-fill"></i> Редактировать
+            </a>
+            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteDetailModal">
+              <i class="bi bi-trash"></i> Удалить
+            </button>
+          </div>
+        {% endif %}
+      </footer>
+    </article>
+
+    <!-- Секция комментариев -->
+    <section class="comments-section mt-5">
+      <h4>Комментарии ({{ comments.count }})</h4>
+      
+      {% if user.is_authenticated %}
+        <div class="card my-4">
+          <div class="card-body">
+            <h5 class="card-title">Оставить комментарий</h5>
+            <form method="post" action="{% url 'blog:add_comment' story.slug %}">
+              {% csrf_token %}
+              <div class="mb-3">
+                  <label for="{{ comment_form.content.id_for_label }}" class="form-label">Ваш комментарий</label>
+                  {{ comment_form.content }}
+              </div>
+              <button type="submit" class="btn btn-primary mt-2">Отправить</button>
+            </form>
+          </div>
+        </div>
+      {% else %}
+        <div class="alert alert-info text-center my-4" role="alert">
+          <a href="{% url 'login' %}?next={{ request.path }}">Войдите</a>, чтобы оставить комментарий.
+        </div>
+      {% endif %}
+
+      <!-- Текст комментария -->
+     <div class="d-flex flex-column gap-3">
+      {% for comment in comments %}
+        <div class="card mb-3">
+          <div class="card-body">
+            <div class="d-flex align-items-start">
+              <img src="{% if comment.author.profile.avatar %}{{ comment.author.profile.avatar.url }}{% else %}{% static 'img/default_avatar.png' %}{% endif %}"
+                  class="rounded-circle me-3"
+                  width="48" height="48" 
+                  alt="Аватар {{ comment.author.username }}" 
+                  style="object-fit: cover";>
+
+              <div class="flex-grow-1">
+                <div class="d-flex justify-content-between align-items-center">
+                  <strong class="mb-0">{{ comment.author.username }}</strong>
+                  <small class="text-muted">{{ comment.created_at|timesince }} назад</small>
+                </div>
+                <div class="card-text mt-2">
+                  {{ comment.content|linebreaks }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <div class="card card-body text-center">
+        <p class="text-muted mb-0">Комментариев пока нет. Станьте первым!</p>
+        </div>
+      {% endfor %}
+     </div>
+    </section>
+  </div>
+</div>
+
+{% if user.is_authenticated and user == story.author %}
+<!-- Модальное окно подтверждения удаления для детальной страницы -->
+<div class="modal fade" id="deleteDetailModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Подтверждение удаления</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Вы уверены, что хотите удалить этот рассказ? Действие нельзя будет отменить.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+        <form action="{% url 'blog:story_delete' story.slug %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Да, удалить</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+

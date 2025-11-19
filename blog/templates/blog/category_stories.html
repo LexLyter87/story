@@ -1,0 +1,6 @@
+{% extends "blog/base.html" %}
+{% block title %}Рассказы в категории "{{ category.name }}"{% endblock %}
+{% block content %}
+  <h1 class="mb-4">Категория: "{{ category.name }}"</h1>
+  {% include 'blog/includes/story_card_list.html' %}
+{% endblock %}

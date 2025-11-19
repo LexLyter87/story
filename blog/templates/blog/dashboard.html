@@ -1,0 +1,96 @@
+<!-- blog/templates/blog/dashboard.html -->
+{% extends "blog/base.html" %}
+{% load static %}
+
+{% block title %}Личный кабинет{% endblock %}
+
+{% block content %}
+<div class="row">
+  <!-- Колонка профиля -->
+  <div class="col-lg-4">
+    <div class="card shadow-sm mb-4">
+      {% if user.profile and user.profile.avatar %}
+        <img src="{{ profile.avatar.url }}" class="card-img-top" alt="Аватар">
+      {% else %}
+        <img src="{% static 'img/default_avatar.png' %}" class="card-img-top" alt="Аватар">
+      {% endif %}
+      <div class="card-body text-center">
+        <h5 class="card-title">@{{ user.username }}</h5>
+        <p class="card-text text-muted">{{ user.profile.bio|default:"Биография не заполнена." }}</p>
+        <a href="{% url 'blog:profile_edit' %}" class="btn btn-primary mt-2">
+          <i class="bi bi-pencil-square"></i> Редактировать профиль
+        </a>
+      </div>
+    </div>
+    <div class="d-grid">
+      <a href="{% url 'blog:story_create' %}" class="btn btn-success">
+        <i class="bi bi-plus-circle-fill"></i> Написать новую интригу
+      </a>
+    </div>
+  </div>
+
+  <!-- Колонка с рассказами -->
+  <div class="col-lg-8">
+    <h2 class="mb-4">Мои рассказы</h2>
+    <ul class="nav nav-pills mb-3" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#published" type="button">
+          Опубликованные <span class="badge bg-secondary">{{ published.count }}</span>
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#drafts" type="button">
+          Черновики <span class="badge bg-secondary">{{ drafts.count }}</span>
+        </button>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+      <!-- Вкладка "Опубликованные" -->
+      <div class="tab-pane fade show active" id="published">
+        <div class="list-group">
+          {% for story in published %}
+            <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+              <div>
+                <a href="{{ story.get_absolute_url }}" class="text-decoration-none stretched-link">{{ story.title }}</a>
+                <br>
+                <small class="text-muted">Опубликовано: {{ story.published_at|date:"d.m.Y" }}</small>
+              </div>
+              <div class="btn-group" role="group">
+                <a href="{% url 'blog:story_update' story.slug %}" class="btn btn-sm btn-outline-secondary">Править</a>
+              </div>
+            </div>
+          {% empty %}
+            <div class="list-group-item">
+              <p class="text-muted mb-0">У вас пока нет опубликованных рассказов.</p>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Вкладка "Черновики" -->
+      <div class="tab-pane fade" id="drafts">
+        <div class="list-group">
+          {% for story in drafts %}
+            <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+              <div>
+                <a href="{% url 'blog:story_update' story.slug %}" class="text-decoration-none stretched-link">{{ story.title }}</a>
+                <br>
+                <small class="text-muted">Последнее изменение: {{ story.updated_at|date:"d.m.Y" }}</small>
+              </div>
+              <div class="btn-group" role="group">
+                 <a href="{% url 'blog:story_update' story.slug %}" class="btn btn-sm btn-outline-secondary">Править</a>
+              </div>
+            </div>
+          {% empty %}
+            <div class="list-group-item">
+              <p class="text-muted mb-0">У вас нет черновиков.</p>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

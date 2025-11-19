@@ -1,0 +1,53 @@
+{% extends "blog/base.html" %}
+
+{% block title %}Главная страница{% endblock %}
+
+
+{% block content %}
+  
+  <!-- HERO-СЕКЦИИ -->
+  {% with story=featured_story %}
+  <section class="py-5 text-center container-fluid position-relative
+                  {% if story.cover_image %}text-white bg-dark{% endif %}" 
+           style="{% if story.cover_image %}
+                    background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('{{ story.cover_image.url }}');
+                    background-size: cover;
+                    background-position: center;
+                  {% else %}
+                    background-color: #c7caceff;
+                  {% endif %}">
+    <div class="row py-lg-5">
+      <div class="col-lg-6 col-md-8 mx-auto">
+
+        {% if story %}
+          <h1 class="fw-light mb-3">
+            <a href="{{ story.get_absolute_url }}" class="text-reset text-decoration-none stretched-link">
+              {{ story.title }}
+            </a>
+          </h1>
+          <p class="lead">{{ story.excerpt|truncatewords:25 }}</p>
+          <p>Автор: <a href="{% url 'blog:user_stories' story.author.username %}" class="text-white fw-bold">{{ story.author.username }}</a></p>
+        {% else %}
+          <h1 class="fw-light">Мир интриг</h1>
+          <p class="lead text-muted">На нашем сайте еще нет ни одной истории. Станьте первым!</p>
+          <p>
+            <a href="{% if user.is_authenticated %}{% url 'blog:story_create' %}{% else %}{% url 'register' %}{% endif %}" class="btn btn-primary my-2">
+              Начать творить
+            </a>
+          </p>
+        {% endif %}
+
+      </div>
+    </div>
+  </section>
+  {% endwith %}
+  <!-- КОНЕЦ HERO-СЕКЦИИ -->
+
+  <div class="container">
+    <h2 class="mt-5 mb-4">Последние интриги</h2>
+    {% include 'blog/includes/story_card_list.html'%}
+  </div>
+
+{% endblock %}
+
+
