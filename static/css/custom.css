@@ -33,3 +33,913 @@ body {
     color: #0d6efd;
 }
 
+/* ========================================
+   Стили для Markdownx редактора
+   ======================================== */
+
+/* Основной контейнер */
+.markdownx {
+    width: 100% !important;
+    border: 1px solid #ced4da !important;
+    border-radius: 0.25rem !important;
+    background-color: #fff !important;
+}
+
+/* Само текстовое поле */
+.markdownx textarea,
+textarea.markdownx-editor {
+    min-height: 450px !important;
+    height: 450px !important;
+    width: 100% !important;
+    font-size: 16px !important;
+    font-family: 'Courier New', Courier, monospace !important;
+    line-height: 1.6 !important;
+    padding: 15px !important;
+    border: none !important;
+    resize: vertical !important;
+    box-sizing: border-box !important;
+}
+
+/* Фокус на поле */
+.markdownx textarea:focus,
+textarea.markdownx-editor:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
+}
+
+/* Область предпросмотра (если есть) */
+.markdownx-preview {
+    min-height: 450px !important;
+    padding: 15px !important;
+    border-left: 1px solid #ced4da !important;
+    display: none;
+}
+
+/* Адаптивность для планшетов */
+@media (max-width: 992px) {
+    .markdownx textarea,
+    textarea.markdownx-editor {
+        min-height: 350px !important;
+        height: 350px !important;
+        font-size: 15px !important;
+    }
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+    .markdownx textarea,
+    textarea.markdownx-editor {
+        min-height: 300px !important;
+        height: 300px !important;
+        font-size: 14px !important;
+        padding: 10px !important;
+    }
+}
+
+/* Дополнительно: убираем ограничения контейнера формы */
+.form-group .markdownx {
+    max-width: 100% !important;
+}
+
+
+/* Анимация карточек при наведении */
+.hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Заголовок карточки */
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    line-height: 1.4;
+    min-height: 2.8rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+/* Текст превью */
+.card-text {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #6c757d;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+/* Футер карточки */
+.card-footer {
+    padding: 0.75rem 1rem;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+    .card-img-top {
+        height: 180px !important;
+    }
+    
+    .card-title {
+        font-size: 1rem;
+        min-height: auto;
+    }
+    
+    .card-text {
+        font-size: 0.9rem;
+        -webkit-line-clamp: 2;
+    }
+}
+
+/* Стили для формы создания/редактирования */
+.card {
+    border: none;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+.invalid-feedback {
+    font-size: 0.9rem;
+}
+
+/* Подсветка обязательных полей */
+.form-label .text-danger {
+    font-size: 1.2em;
+}
+
+
+/* Хлебные крошки */
+.breadcrumb {
+    background-color: transparent;
+    padding: 0.75rem 0;
+    margin-bottom: 0;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "›";
+    font-size: 1.2rem;
+    color: #6c757d;
+}
+
+.breadcrumb-item a {
+    color: #0d6efd;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.breadcrumb-item a:hover {
+    color: #0a58ca;
+    text-decoration: underline;
+}
+
+.breadcrumb-item.active {
+    color: #6c757d;
+}
+
+/* Заголовки категорий и пользователей */
+.category-icon,
+.user-avatar-large {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Alert для информации */
+.alert-light {
+    background-color: #f8f9fa;
+    border-left: 4px solid #0d6efd;
+}
+
+/* Empty state */
+.bi-inbox.display-1 {
+    font-size: 5rem;
+}
+
+/* Улучшаем отображение на мобильных */
+@media (max-width: 768px) {
+    .breadcrumb {
+        font-size: 0.9rem;
+    }
+    
+    .bi-inbox.display-1 {
+        font-size: 3rem;
+    }
+    
+    h1 {
+        font-size: 1.75rem;
+    }
+}
+
+
+/* Dashboard стили */
+.hover-lift {
+    transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Карточка профиля */
+.card-img-top {
+    object-fit: cover;
+}
+
+/* Dropdown в карточках */
+.dropdown-toggle::after {
+    display: none;
+}
+
+/* Статистика */
+.list-group-item {
+    padding: 0.75rem 1rem;
+    border-left: none;
+    border-right: none;
+}
+
+.list-group-item:first-child {
+    border-top: none;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+/* Вкладки */
+.nav-tabs .nav-link {
+    color: #6c757d;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 0.75rem 1.5rem;
+}
+
+.nav-tabs .nav-link:hover {
+    border-bottom-color: #dee2e6;
+}
+
+.nav-tabs .nav-link.active {
+    color: #0d6efd;
+    border-bottom-color: #0d6efd;
+    background-color: transparent;
+}
+
+/* Бейджи */
+.badge {
+    font-weight: 500;
+}
+
+/* Empty states */
+.bi-inbox,
+.bi-file-earmark {
+    opacity: 0.5;
+}
+
+/* Адаптивность */
+@media (max-width: 992px) {
+    .col-lg-4,
+    .col-lg-8 {
+        margin-bottom: 1.5rem;
+    }
+}
+
+
+/* Профиль - редактирование */
+#avatarPreview {
+    transition: all 0.3s ease;
+}
+
+#avatarPreview:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Кнопка загрузки аватара */
+label[for*="avatar"] .btn {
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+label[for*="avatar"] .btn:hover {
+    transform: scale(1.1);
+}
+
+/* Input для файла (скрываем стандартный) */
+input[type="file"] {
+    font-size: 0.9rem;
+}
+
+/* Форма профиля */
+.form-label {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+/* Карточка советов */
+.card.bg-light {
+    border-left: 4px solid #0d6efd;
+}
+
+/* Статистика */
+.text-primary.fs-4,
+.text-success.fs-4,
+.text-danger.fs-4 {
+    font-weight: 700;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    #avatarPreview {
+        width: 150px !important;
+        height: 150px !important;
+    }
+    
+    .col-md-4,
+    .col-md-8 {
+        margin-bottom: 1.5rem;
+    }
+}
+
+
+/* Страница подтверждения удаления */
+.alert-danger .display-1 {
+    font-size: 4rem;
+    opacity: 0.8;
+}
+
+/* Карточка с информацией о рассказе */
+.card-body .row.g-3 p {
+    margin-bottom: 0;
+}
+
+.card-body .row.g-3 strong {
+    color: #2c3e50;
+}
+
+/* Чекбокс подтверждения */
+.form-check-input:checked {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.form-check-label {
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Кнопка удаления */
+#deleteButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#deleteButton:not(:disabled):hover {
+    transform: scale(1.05);
+    transition: transform 0.2s;
+}
+
+/* Предупреждающие элементы */
+.border-danger {
+    border-width: 2px !important;
+}
+
+.border-warning {
+    border-width: 2px !important;
+}
+
+/* Статистика */
+.d-flex.gap-4 span {
+    white-space: nowrap;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .alert-danger .display-1 {
+        font-size: 3rem;
+    }
+    
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .d-flex.justify-content-between .d-flex {
+        width: 100%;
+    }
+    
+    .d-flex.justify-content-between .btn {
+        width: 100%;
+    }
+}
+
+
+/* Детальная страница рассказа */
+
+/* Хлебные крошки */
+.breadcrumb-item.active {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Заголовок рассказа */
+article h1 {
+    font-size: 2.5rem;
+    line-height: 1.2;
+    color: #1a1a1a;
+}
+
+/* Мета-информация */
+article header .text-muted a:hover {
+    color: #0d6efd !important;
+}
+
+/* Обложка рассказа */
+article img.img-fluid {
+    transition: transform 0.3s ease;
+}
+
+article img.img-fluid:hover {
+    transform: scale(1.02);
+}
+
+/* Кнопки лайков и комментариев */
+.btn-outline-danger:hover,
+.btn-outline-secondary:hover {
+    transform: translateY(-2px);
+    transition: all 0.2s;
+}
+
+/* Комментарии */
+.comment-text {
+    line-height: 1.6;
+    color: #333;
+}
+
+.comment-text p:last-child {
+    margin-bottom: 0;
+}
+
+/* Карточки комментариев */
+.comments-section .card {
+    transition: all 0.2s;
+}
+
+.comments-section .card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Empty state для комментариев */
+.bi-chat.display-1 {
+    font-size: 4rem;
+    opacity: 0.3;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    article h1 {
+        font-size: 1.75rem;
+    }
+    
+    article {
+        padding: 1.5rem !important;
+    }
+    
+    .story-content {
+        font-size: 1rem;
+    }
+    
+    .breadcrumb-item.active {
+        max-width: 150px;
+    }
+}
+
+
+/* Форма создания/редактирования рассказа */
+
+/* Предпросмотр обложки */
+#coverPreview,
+#currentCover {
+    transition: all 0.3s ease;
+}
+
+#coverPreviewImage {
+    border: 2px solid #0d6efd;
+}
+
+.img-thumbnail {
+    padding: 0.25rem;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+}
+
+/* Поля формы */
+.form-label {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+/* Требуемые поля */
+.form-label .text-danger {
+    font-size: 1.2em;
+}
+
+/* Подсказки */
+.form-text {
+    font-size: 0.875rem;
+}
+
+/* Блок с советами */
+.card.bg-light {
+    border-left: 4px solid #0d6efd;
+}
+
+.card.bg-light code {
+    background-color: #fff;
+    color: #d63384;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+/* Alert с советами */
+.alert-info {
+    border-left: 4px solid #0dcaf0;
+}
+
+.alert-info .alert-heading {
+    color: #055160;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .d-flex.justify-content-between {
+        flex-direction: column;
+    }
+    
+    .d-flex.justify-content-between > div {
+        width: 100%;
+    }
+    
+    .d-flex.gap-2 .btn {
+        flex: 1;
+    }
+    
+    #coverPreviewImage,
+    #currentCover {
+        max-width: 100% !important;
+    }
+}
+
+
+/* Hero-секция */
+.hero-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: inherit;
+    filter: blur(0px);
+    z-index: -1;
+}
+
+.hero-title {
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+    transition: transform 0.3s ease;
+}
+
+.hero-title:hover {
+    transform: scale(1.02);
+}
+
+.hero-section .lead {
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+    font-size: 1.25rem;
+}
+
+/* Категории - горизонтальный скролл */
+.overflow-auto::-webkit-scrollbar {
+    height: 6px;
+}
+
+.overflow-auto::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.overflow-auto::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.overflow-auto::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Кнопки категорий */
+.btn.text-nowrap {
+    white-space: nowrap;
+}
+
+/* Поиск */
+.form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Empty state */
+.bi-inbox.display-1 {
+    font-size: 5rem;
+    opacity: 0.3;
+}
+
+/* Градиент для пустого hero */
+.bg-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .hero-section {
+        min-height: 400px !important;
+    }
+    
+    .hero-title {
+        font-size: 2rem;
+    }
+    
+    .hero-section .lead {
+        font-size: 1.1rem;
+    }
+    
+    .overflow-auto {
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+
+/* Страница автора */
+
+/* Профиль автора */
+.card .rounded-circle {
+    transition: transform 0.3s ease;
+}
+
+.card .rounded-circle:hover {
+    transform: scale(1.05);
+}
+
+/* Статистика */
+.bg-light.rounded {
+    transition: all 0.3s ease;
+}
+
+.bg-light.rounded:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.bg-light h3 {
+    font-weight: 700;
+}
+
+/* Кнопки сортировки */
+.btn-group .btn {
+    font-weight: 500;
+}
+
+/* Empty state */
+.bi-inbox.display-1 {
+    font-size: 5rem;
+    opacity: 0.3;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .card .rounded-circle {
+        width: 120px !important;
+        height: 120px !important;
+    }
+    
+    h1 {
+        font-size: 1.75rem;
+    }
+    
+    .bg-light h3 {
+        font-size: 1.5rem;
+    }
+}
+
+/* Страницы аутентификации (login, register) */
+
+/* Минимальная высота для центрирования */
+.min-vh-75 {
+    min-height: 75vh;
+}
+
+/* Карточка формы */
+.card.border-0 {
+    border-radius: 1rem;
+}
+
+.card-body {
+    border-radius: 1rem 1rem 0 0;
+}
+
+.card-footer {
+    border-radius: 0 0 1rem 1rem;
+}
+
+/* Input группы */
+.input-group-text {
+    background-color: #f8f9fa;
+    border-right: none;
+}
+
+.input-group .form-control {
+    border-left: none;
+}
+
+.input-group .form-control:focus {
+    border-color: #ced4da;
+    box-shadow: none;
+}
+
+.input-group:focus-within .input-group-text {
+    border-color: #0d6efd;
+    color: #0d6efd;
+}
+
+.input-group:focus-within .form-control {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+/* Кнопка показать/скрыть пароль */
+#togglePassword {
+    cursor: pointer;
+}
+
+/* Логотип */
+.display-3 {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Alert */
+.alert {
+    border-left: 4px solid;
+}
+
+.alert-danger {
+    border-left-color: #dc3545;
+}
+
+.alert-success {
+    border-left-color: #198754;
+}
+
+/* Кнопки */
+.btn-primary {
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+}
+
+/* Ссылки */
+.card-footer a {
+    transition: color 0.2s;
+}
+
+.card-footer a:hover {
+    color: #0d6efd !important;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 2rem !important;
+    }
+    
+    .display-3 {
+        font-size: 3rem;
+    }
+}
+
+
+/* Индикатор силы пароля */
+.password-strength-meter {
+    height: 6px;
+    background-color: #e9ecef;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.password-strength-bar {
+    height: 100%;
+    width: 0;
+    transition: all 0.3s ease;
+    border-radius: 3px;
+}
+
+#passwordStrengthText {
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+/* Валидация полей */
+.form-control.is-valid {
+    border-color: #198754;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+.form-control.is-invalid {
+    border-color: #dc3545;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+/* Checkbox соглашения */
+.form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+/* Анимация появления */
+.card {
+    animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 2rem !important;
+    }
+}

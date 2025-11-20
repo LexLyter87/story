@@ -11,6 +11,8 @@ from .forms import UserRegisterForm, UserEditForm, ProfileEditForm
 from django.db.models import Count, Q
 from django.contrib.auth.models import User
 from django.views.decorators.http import require_POST
+from django.core.cache import cache
+from django.core.paginator import Paginator
 
 
 
@@ -49,9 +51,22 @@ class StoryDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         story = self.get_object()
-        context['comments'] = story.comments.filter(is_active=True).select_related('author__profile')
+        comments_list = story.comments.filter(is_active=True).select_related('author__profile')
+        paginator = Paginator(comments_list, 10)
+        page_number = self.request.GET.get('page')
+        comments = paginator.get_page(page_number)
+
+        context['comments'] = comments
         context['comment_form'] = CommentForm()
-        context['like_count'] = story.likes.count()
+        
+        cache_key = f'story_likes_{story.pk}'
+        like_count = cache.get(cache_key)
+        if like_count is None:
+            like_count = story.likes.count()
+            cache.set(cache_key, like_count, 300)
+
+        context['like_count'] = like_count
+        
         if self.request.user.is_authenticated:
             context['user_likes'] = story.likes.filter(user=self.request.user).exists()
         else:
@@ -101,17 +116,19 @@ class StoryDeleteView(LoginRequiredMixin, AuthorRequireMixin, DeleteView):
     
 
 @login_required
+@require_POST
 def add_comment(request, slug):
     story = get_object_or_404(Story, slug=slug, status=Story.Status.PUBLISHED)
-    if request.method == 'POST':
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.story = story
-            comment.author = request.user
-            comment.save()
-            messages.success(request, "Ваш комментарий добавлен и ожидает модерации.")
-            return redirect('blog:story_detail', slug=story.slug)
+    form = CommentForm(data=request.POST)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.story = story
+        comment.author = request.user
+        comment.save()
+        messages.success(request, "Ваш комментарий добавлен и ожидает модерации.")
+    else:
+        messages.error(request, "Ошибка при добавлении комментария.")
+
     return redirect('blog:story_detail', slug=story.slug)
 
 
@@ -206,17 +223,22 @@ class CategoryStoryListView(ListView):
 
 
 @login_required
+@require_POST
 def toggle_like(request, slug):
     story = get_object_or_404(
         Story,
         slug=slug,
         status=Story.Status.PUBLISHED
     )
-    if request.method == 'POST':
-        like, created = Like.objects.get_or_create(story=story, user=request.user)
-        if not created:
-            like.delete()
-            messages.info(request, 'Лайк удалён.')
-        else:
-            messages.success(request, 'Вы поставили лайк!')
+
+    like, created = Like.objects.get_or_create(story=story, user=request.user)
+    if not created:
+        like.delete()
+        messages.info(request, 'Лайк удалён.')
+    else:
+        messages.success(request, 'Вы поставили лайк!')
+        
+    cache_key = f'story_likes_{story.pk}'
+    cache.delete(cache_key)
+
     return redirect('blog:story_detail', slug=slug)

@@ -3,17 +3,27 @@ from .models import Story, Comment, UserProfile
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from slugify import slugify
-from ckeditor.widgets import CKEditorWidget
+from markdownx.fields import MarkdownxFormField
+from markdownx.widgets import MarkdownxWidget
 
 
 class StoryForm(forms.ModelForm):
-    content = forms.CharField(label='Текст рассказа', widget=CKEditorWidget(attrs={'class': 'form-control'}))
+    content = MarkdownxFormField(
+        label='Текст рассказа',
+        widget=MarkdownxWidget(attrs={
+            'class': 'form-control',
+            'rows': 15,
+            'style': 'min-height: 400px; font-size: 16px;',
+            'placeholder': 'Введите текст рассказа в формате Markdown...\n\n**Жирный текст**\n*Курсив*\n# Заголовок'
+        })
+    )
+    
     class Meta:
         model = Story
         fields = ['title', 'content', 'excerpt', 'category', 'cover_image', 'status']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
-            'excerpt': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Краткое описание для превью...'}),
+            'excerpt': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Краткое описание для превью...'}),
             'category': forms.Select(attrs={'class': 'form-control'}),
             'cover_image': forms.FileInput(attrs={'class': 'form-control'}),
             'status': forms.Select(attrs={'class': 'form-control'}),

@@ -1,6 +1,139 @@
 {% extends "blog/base.html" %}
+{% load static %}
+
 {% block title %}Рассказы автора {{ author.username }}{% endblock %}
+
 {% block content %}
-  <h1 class="mb-4">Рассказы автора: {{ author.username }}</h1>
-  {% include 'blog/includes/story_card_list.html' %}
+<div class="container">
+  <!-- Хлебные крошки -->
+  <nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a href="{% url 'blog:story_list' %}"><i class="bi bi-house-door"></i> Главная</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        <i class="bi bi-person"></i> {{ author.username }}
+      </li>
+    </ol>
+  </nav>
+
+  <!-- Профиль автора -->
+  <div class="card shadow-sm mb-5">
+    <div class="card-body">
+      <div class="row">
+        <!-- Аватар -->
+        <div class="col-md-3 text-center mb-3 mb-md-0">
+          <img src="{{ author.profile.get_avatar_url }}" 
+               class="rounded-circle shadow" 
+               width="150" 
+               height="150" 
+               alt="Аватар {{ author.username }}"
+               style="object-fit: cover; border: 4px solid #f8f9fa;">
+        </div>
+        
+        <!-- Информация об авторе -->
+        <div class="col-md-9">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div>
+              <h1 class="mb-2">{{ author.username }}</h1>
+              {% if author.profile.bio %}
+                <p class="text-muted mb-3">{{ author.profile.bio }}</p>
+              {% else %}
+                <p class="text-muted fst-italic mb-3">Автор пока не добавил биографию</p>
+              {% endif %}
+            </div>
+            
+            <!-- Кнопка редактирования (для владельца) -->
+            {% if user == author %}
+              <a href="{% url 'blog:profile_edit' %}" class="btn btn-outline-primary">
+                <i class="bi bi-pencil"></i> Редактировать
+              </a>
+            {% endif %}
+          </div>
+          
+          <!-- Статистика -->
+          <div class="row text-center g-3">
+            <div class="col-6 col-md-3">
+              <div class="p-3 bg-light rounded">
+                <h3 class="mb-1 text-primary">{{ stories.count|default:page_obj.paginator.count }}</h3>
+                <small class="text-muted">Рассказов</small>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="p-3 bg-light rounded">
+                <h3 class="mb-1 text-success">{{ total_likes|default:0 }}</h3>
+                <small class="text-muted">Лайков</small>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="p-3 bg-light rounded">
+                <h3 class="mb-1 text-info">{{ total_comments|default:0 }}</h3>
+                <small class="text-muted">Комментариев</small>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="p-3 bg-light rounded">
+                <h3 class="mb-1 text-warning">
+                  <i class="bi bi-calendar"></i>
+                </h3>
+                <small class="text-muted">
+                  {% if author.date_joined %}
+                    С {{ author.date_joined|date:"Y" }}
+                  {% else %}
+                    Новичок
+                  {% endif %}
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Заголовок и фильтры -->
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+    <div>
+      <h2 class="mb-1">
+        <i class="bi bi-book"></i> Рассказы автора
+      </h2>
+      {% if stories %}
+        <p class="text-muted mb-0">
+          Всего опубликовано: {{ page_obj.paginator.count }}
+        </p>
+      {% endif %}
+    </div>
+    
+    <!-- Сортировка -->
+    <div class="btn-group" role="group">
+      <a href="?sort=newest" 
+         class="btn btn-sm {% if request.GET.sort == 'newest' or not request.GET.sort %}btn-primary{% else %}btn-outline-primary{% endif %}">
+        <i class="bi bi-clock"></i> Новые
+      </a>
+      <a href="?sort=popular" 
+         class="btn btn-sm {% if request.GET.sort == 'popular' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+        <i class="bi bi-fire"></i> Популярные
+      </a>
+    </div>
+  </div>
+
+  <!-- Список рассказов -->
+  {% if stories %}
+    {% include 'blog/includes/story_card_list.html' %}
+  {% else %}
+    <div class="text-center py-5">
+      <i class="bi bi-inbox display-1 text-muted"></i>
+      <h3 class="mt-4 mb-3">У этого автора пока нет опубликованных рассказов</h3>
+      {% if user == author %}
+        <p class="text-muted mb-4">Начните писать свою первую историю прямо сейчас!</p>
+        <a href="{% url 'blog:story_create' %}" class="btn btn-primary">
+          <i class="bi bi-plus-circle"></i> Создать первый рассказ
+        </a>
+      {% else %}
+        <p class="text-muted">Следите за обновлениями!</p>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
 {% endblock %}
+

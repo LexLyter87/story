@@ -25,8 +25,10 @@ urlpatterns = [
     path('accounts/register/', RegisterView.as_view(), name='register'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('', include(('blog.urls', 'blog'), namespace='blog')),
+    path('markdownx/', include('markdownx.urls')),
 ]
 
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

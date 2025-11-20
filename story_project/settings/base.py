@@ -31,7 +31,7 @@ if not SECRET_KEY:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 # Application definition
 
@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'blog',
     'imagekit',
+    'markdownx',
 ]
 
 MIDDLEWARE = [
@@ -152,15 +153,11 @@ LOGIN_URL = 'login'
 LOGOUT_REDIRECT_URL = 'blog:story_list'
 
 
-INSTALLED_APPS += ['ckeditor']
+MARKDOWNX_MARKDOWN_EXTENSIONS = [
+    'markdown.extensions.extra',
+    'markdown.extensions.nl2br',
+    'markdown.extensions.smarty',
+]
 
-
-CKEDITOR_CONFIGS = {
-    'default': {
-        'forcePasteAsPlainText': True,
-        'removePlugins': 'elementspath',
-        'skin': 'moono',
-        'width': '100%',
-    }
-}
-
+MARKDOWNX_MARKDOWN_EXTENSION_CONFIGS = {}
+MARKDOWNX_MEDIA_PATH = 'markdownx/'

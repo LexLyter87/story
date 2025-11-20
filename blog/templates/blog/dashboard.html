@@ -1,96 +1,234 @@
-<!-- blog/templates/blog/dashboard.html -->
 {% extends "blog/base.html" %}
 {% load static %}
 
 {% block title %}Личный кабинет{% endblock %}
 
 {% block content %}
-<div class="row">
-  <!-- Колонка профиля -->
-  <div class="col-lg-4">
-    <div class="card shadow-sm mb-4">
-      {% if user.profile and user.profile.avatar %}
-        <img src="{{ profile.avatar.url }}" class="card-img-top" alt="Аватар">
-      {% else %}
-        <img src="{% static 'img/default_avatar.png' %}" class="card-img-top" alt="Аватар">
-      {% endif %}
-      <div class="card-body text-center">
-        <h5 class="card-title">@{{ user.username }}</h5>
-        <p class="card-text text-muted">{{ user.profile.bio|default:"Биография не заполнена." }}</p>
-        <a href="{% url 'blog:profile_edit' %}" class="btn btn-primary mt-2">
-          <i class="bi bi-pencil-square"></i> Редактировать профиль
-        </a>
-      </div>
-    </div>
-    <div class="d-grid">
-      <a href="{% url 'blog:story_create' %}" class="btn btn-success">
-        <i class="bi bi-plus-circle-fill"></i> Написать новую интригу
-      </a>
-    </div>
+<div class="container">
+  <!-- Заголовок -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="bi bi-speedometer2"></i> Мой кабинет</h1>
+    <a href="{% url 'blog:story_create' %}" class="btn btn-primary">
+      <i class="bi bi-plus-circle"></i> Написать интригу
+    </a>
   </div>
 
-  <!-- Колонка с рассказами -->
-  <div class="col-lg-8">
-    <h2 class="mb-4">Мои рассказы</h2>
-    <ul class="nav nav-pills mb-3" role="tablist">
-      <li class="nav-item" role="presentation">
-        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#published" type="button">
-          Опубликованные <span class="badge bg-secondary">{{ published.count }}</span>
-        </button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#drafts" type="button">
-          Черновики <span class="badge bg-secondary">{{ drafts.count }}</span>
-        </button>
-      </li>
-    </ul>
-
-    <div class="tab-content">
-      <!-- Вкладка "Опубликованные" -->
-      <div class="tab-pane fade show active" id="published">
-        <div class="list-group">
-          {% for story in published %}
-            <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-              <div>
-                <a href="{{ story.get_absolute_url }}" class="text-decoration-none stretched-link">{{ story.title }}</a>
-                <br>
-                <small class="text-muted">Опубликовано: {{ story.published_at|date:"d.m.Y" }}</small>
-              </div>
-              <div class="btn-group" role="group">
-                <a href="{% url 'blog:story_update' story.slug %}" class="btn btn-sm btn-outline-secondary">Править</a>
-              </div>
-            </div>
-          {% empty %}
-            <div class="list-group-item">
-              <p class="text-muted mb-0">У вас пока нет опубликованных рассказов.</p>
-            </div>
-          {% endfor %}
+  <div class="row">
+    <!-- Колонка профиля -->
+    <div class="col-lg-4 mb-4">
+      <!-- Карточка профиля -->
+      <div class="card shadow-sm mb-3">
+        <div class="position-relative">
+          <img src="{{ profile.get_avatar_url }}" 
+               class="card-img-top" 
+               alt="Аватар {{ user.username }}"
+               style="height: 250px; object-fit: cover;">
+          <div class="position-absolute bottom-0 start-0 end-0 bg-dark bg-opacity-75 text-white p-3">
+            <h5 class="mb-0">@{{ user.username }}</h5>
+          </div>
+        </div>
+        <div class="card-body">
+          {% if profile.bio %}
+            <p class="card-text text-muted">{{ profile.bio }}</p>
+          {% else %}
+            <p class="card-text text-muted fst-italic">Расскажите о себе...</p>
+          {% endif %}
+          <a href="{% url 'blog:profile_edit' %}" class="btn btn-outline-primary w-100">
+            <i class="bi bi-pencil-square"></i> Редактировать профиль
+          </a>
         </div>
       </div>
 
-      <!-- Вкладка "Черновики" -->
-      <div class="tab-pane fade" id="drafts">
-        <div class="list-group">
-          {% for story in drafts %}
-            <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-              <div>
-                <a href="{% url 'blog:story_update' story.slug %}" class="text-decoration-none stretched-link">{{ story.title }}</a>
-                <br>
-                <small class="text-muted">Последнее изменение: {{ story.updated_at|date:"d.m.Y" }}</small>
-              </div>
-              <div class="btn-group" role="group">
-                 <a href="{% url 'blog:story_update' story.slug %}" class="btn btn-sm btn-outline-secondary">Править</a>
+      <!-- Статистика -->
+      <div class="card shadow-sm">
+        <div class="card-header bg-white">
+          <h6 class="mb-0"><i class="bi bi-bar-chart"></i> Статистика</h6>
+        </div>
+        <div class="list-group list-group-flush">
+          <div class="list-group-item d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-file-text text-success"></i> Опубликовано</span>
+            <span class="badge bg-success rounded-pill">{{ published.count }}</span>
+          </div>
+          <div class="list-group-item d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-file-earmark text-warning"></i> Черновиков</span>
+            <span class="badge bg-warning text-dark rounded-pill">{{ drafts.count }}</span>
+          </div>
+          <div class="list-group-item d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-heart-fill text-danger"></i> Всего лайков</span>
+            <span class="badge bg-danger rounded-pill">
+              {% widthratio published 0 1 as total_likes %}
+              {{ published|length|default:0 }}
+            </span>
+          </div>
+          <div class="list-group-item d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-chat text-info"></i> Комментариев</span>
+            <span class="badge bg-info rounded-pill">
+              {{ published|length|default:0 }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Колонка с рассказами -->
+    <div class="col-lg-8">
+      <!-- Навигация по вкладкам -->
+      <ul class="nav nav-tabs mb-4" id="storiesTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="published-tab" data-bs-toggle="tab" data-bs-target="#published" type="button" role="tab">
+            <i class="bi bi-check-circle"></i> Опубликованные 
+            <span class="badge bg-success ms-1">{{ published.count }}</span>
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="drafts-tab" data-bs-toggle="tab" data-bs-target="#drafts" type="button" role="tab">
+            <i class="bi bi-pencil-square"></i> Черновики 
+            <span class="badge bg-warning text-dark ms-1">{{ drafts.count }}</span>
+          </button>
+        </li>
+      </ul>
+
+      <!-- Содержимое вкладок -->
+      <div class="tab-content" id="storiesTabContent">
+        <!-- Вкладка "Опубликованные" -->
+        <div class="tab-pane fade show active" id="published" role="tabpanel">
+          {% if published %}
+            <div class="row row-cols-1 g-3">
+              {% for story in published %}
+                <div class="col">
+                  <div class="card shadow-sm hover-lift">
+                    <div class="card-body">
+                      <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="flex-grow-1">
+                          <h5 class="card-title mb-2">
+                            <a href="{{ story.get_absolute_url }}" class="text-decoration-none">
+                              {{ story.title }}
+                            </a>
+                          </h5>
+                          {% if story.category %}
+                            <span class="badge bg-primary mb-2">
+                              <i class="bi bi-tag"></i> {{ story.category.name }}
+                            </span>
+                          {% endif %}
+                          <p class="card-text text-muted small mb-2">
+                            {{ story.get_plain_excerpt|truncatewords:20 }}
+                          </p>
+                        </div>
+                        <div class="dropdown">
+                          <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                          </button>
+                          <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                              <a class="dropdown-item" href="{{ story.get_absolute_url }}">
+                                <i class="bi bi-eye"></i> Просмотр
+                              </a>
+                            </li>
+                            <li>
+                              <a class="dropdown-item" href="{% url 'blog:story_update' story.slug %}">
+                                <i class="bi bi-pencil"></i> Редактировать
+                              </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                              <a class="dropdown-item text-danger" href="{% url 'blog:story_delete' story.slug %}">
+                                <i class="bi bi-trash"></i> Удалить
+                              </a>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                      <div class="d-flex justify-content-between align-items-center small text-muted">
+                        <div class="d-flex gap-3">
+                          <span><i class="bi bi-calendar"></i> {{ story.published_at|date:"d.m.Y" }}</span>
+                          <span><i class="bi bi-heart-fill text-danger"></i> {{ story.like_count|default:0 }}</span>
+                          <span><i class="bi bi-chat"></i> {{ story.comment_count|default:0 }}</span>
+                        </div>
+                        <span class="badge bg-success">Опубликовано</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="card shadow-sm">
+              <div class="card-body text-center py-5">
+                <i class="bi bi-inbox display-1 text-muted"></i>
+                <h4 class="mt-3 mb-2">Нет опубликованных рассказов</h4>
+                <p class="text-muted mb-4">Начните писать свою первую историю!</p>
+                <a href="{% url 'blog:story_create' %}" class="btn btn-primary">
+                  <i class="bi bi-plus-circle"></i> Создать рассказ
+                </a>
               </div>
             </div>
-          {% empty %}
-            <div class="list-group-item">
-              <p class="text-muted mb-0">У вас нет черновиков.</p>
+          {% endif %}
+        </div>
+
+        <!-- Вкладка "Черновики" -->
+        <div class="tab-pane fade" id="drafts" role="tabpanel">
+          {% if drafts %}
+            <div class="row row-cols-1 g-3">
+              {% for story in drafts %}
+                <div class="col">
+                  <div class="card shadow-sm hover-lift border-warning">
+                    <div class="card-body">
+                      <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="flex-grow-1">
+                          <h5 class="card-title mb-2">
+                            <a href="{% url 'blog:story_update' story.slug %}" class="text-decoration-none">
+                              {{ story.title }}
+                            </a>
+                          </h5>
+                          {% if story.category %}
+                            <span class="badge bg-primary mb-2">
+                              <i class="bi bi-tag"></i> {{ story.category.name }}
+                            </span>
+                          {% endif %}
+                          <p class="card-text text-muted small mb-2">
+                            {{ story.get_plain_excerpt|truncatewords:20 }}
+                          </p>
+                        </div>
+                        <div class="dropdown">
+                          <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                          </button>
+                          <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                              <a class="dropdown-item" href="{% url 'blog:story_update' story.slug %}">
+                                <i class="bi bi-pencil"></i> Редактировать
+                              </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                              <a class="dropdown-item text-danger" href="{% url 'blog:story_delete' story.slug %}">
+                                <i class="bi bi-trash"></i> Удалить
+                              </a>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                      <div class="d-flex justify-content-between align-items-center small text-muted">
+                        <span><i class="bi bi-clock"></i> Изменён: {{ story.updated_at|date:"d.m.Y H:i" }}</span>
+                        <span class="badge bg-warning text-dark">Черновик</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
             </div>
-          {% endfor %}
+          {% else %}
+            <div class="card shadow-sm">
+              <div class="card-body text-center py-5">
+                <i class="bi bi-file-earmark display-1 text-muted"></i>
+                <h4 class="mt-3 mb-2">Нет черновиков</h4>
+                <p class="text-muted">Все ваши рассказы опубликованы!</p>
+              </div>
+            </div>
+          {% endif %}
         </div>
       </div>
     </div>
   </div>
 </div>
 {% endblock %}
-

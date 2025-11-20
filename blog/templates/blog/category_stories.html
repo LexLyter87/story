@@ -1,6 +1,66 @@
 {% extends "blog/base.html" %}
+{% load static %}
+
 {% block title %}Рассказы в категории "{{ category.name }}"{% endblock %}
+
 {% block content %}
-  <h1 class="mb-4">Категория: "{{ category.name }}"</h1>
-  {% include 'blog/includes/story_card_list.html' %}
+<div class="container">
+  <!-- Хлебные крошки -->
+  <nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a href="{% url 'blog:story_list' %}">
+          <i class="bi bi-house-door"></i> Главная
+        </a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        <i class="bi bi-tag"></i> {{ category.name }}
+      </li>
+    </ol>
+  </nav>
+
+  <!-- Заголовок категории -->
+  <div class="mb-5">
+    <div class="d-flex align-items-center mb-3">
+      <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
+        <i class="bi bi-tag-fill fs-3"></i>
+      </div>
+      <div>
+        <h1 class="mb-1">{{ category.name }}</h1>
+        <p class="text-muted mb-0">
+          <i class="bi bi-collection"></i> 
+          {{ stories.count|default:page_obj.paginator.count }} 
+          {% if stories.count == 1 %}рассказ{% elif stories.count < 5 %}рассказа{% else %}рассказов{% endif %}
+        </p>
+      </div>
+    </div>
+    
+    {% if stories %}
+      <div class="alert alert-light border" role="alert">
+        <i class="bi bi-info-circle"></i>
+        Здесь собраны все истории из категории <strong>{{ category.name }}</strong>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Список рассказов -->
+  {% if stories %}
+    {% include 'blog/includes/story_card_list.html' %}
+  {% else %}
+    <div class="text-center py-5">
+      <i class="bi bi-inbox display-1 text-muted"></i>
+      <h3 class="mt-4 mb-3">В этой категории пока нет рассказов</h3>
+      <p class="text-muted mb-4">Станьте первым, кто опубликует историю в категории "{{ category.name }}"</p>
+      {% if user.is_authenticated %}
+        <a href="{% url 'blog:story_create' %}" class="btn btn-primary">
+          <i class="bi bi-plus-circle"></i> Написать рассказ
+        </a>
+      {% else %}
+        <a href="{% url 'register' %}" class="btn btn-outline-primary">
+          <i class="bi bi-person-plus"></i> Зарегистрироваться
+        </a>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
 {% endblock %}

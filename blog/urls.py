@@ -1,4 +1,4 @@
-from django.urls import path, include
+from django.urls import path
 from . import views
 
 app_name = 'blog'
@@ -15,5 +15,4 @@ urlpatterns = [
     path('author/<str:username>/', views.UserStoryListView.as_view(), name='user_stories'),
     path('category/<str:slug>/', views.CategoryStoryListView.as_view(), name='category_stories'),
     path('story/<str:slug>/like/', views.toggle_like, name='story_like'),
-    path('ckeditor/', include('ckeditor_uploader.urls')),
 ]

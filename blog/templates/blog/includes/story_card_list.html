@@ -1,84 +1,116 @@
-<!-- blog/templates/blog/includes/story_card_list.html -->
 {% load static %}
 
 <!-- Список рассказов в виде сетки карточек -->
-<div class="row row-cols-1 row-cols-md-2 g-4">
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
 {% for story in stories %}
   <div class="col">
-    <div class="card h-100 shadow-sm position-relative">
+    <div class="card h-100 shadow-sm position-relative hover-lift">
+      <!-- Обложка рассказа -->
       {% if story.cover_image %}
         <img src="{{ story.cover_image_thumbnail.url }}" class="card-img-top" alt="{{ story.title }}" style="height: 200px; object-fit: cover;">
       {% else %}
-        <img src="{% static 'img/default_avatar.png' %}" class="card-img-top" alt="Изображение по умолчанию" style="height: 200px; object-fit: cover;">
-      {% endif %}  
-      <div class="card-body position-relative">
-        <h5 class="card-title">
-          {{ story.title }}
-        </h5>
-        <p class="card-text">{{ story.excerpt|default:story.content|truncatewords:25|safe }}</p>
-        <a href="{{ story.get_absolute_url }}" class="stretched-link"></a>
+        <img src="{% static 'images/default-cover.jpg' %}" class="card-img-top" alt="Изображение по умолчанию" style="height: 200px; object-fit: cover;">
+      {% endif %}
+      
+      <!-- Тело карточки -->
+      <div class="card-body d-flex flex-column">
+        <h5 class="card-title">{{ story.title }}</h5>
+        <p class="card-text text-muted flex-grow-1">{{ story.get_plain_excerpt }}</p>
+        <a href="{{ story.get_absolute_url }}" class="stretched-link" aria-label="Читать {{ story.title }}"></a>
       </div>
-      <div class="card-footer bg-transparent border-top-0 d-flex justify-content-between align-items-center">
-        <div>
-        <!--Блок с автором-->
-          <a href="{% url 'blog:user_stories' story.author.username %}" class="text-decoration-none text-muted small">
-            {% if story.author.profile and story.author.profile.avatar %}
-                <img src="{{ story.author.profile.avatar.url }}" class="rounded-circle me-2" width="30" height="30" alt="Аватар автора" style="object-fit: cover;">
-            {% else %}
-                <img src="{% static 'img/default_avatar.png' %}" class="rounded-circle me-2" width="30" height="30" alt="Аватар автора" style="object-fit: cover;">
-            {% endif %}
-            {{ story.author.username }}
-          </a>
-        </div>
-        <!-- Блок с датой и лайками -->
-         <div class="d-flex align-items-center">
-          <small class="text-muted me-3">{{ story.published_at|date:"d M Y" }}</small>
-          <div class="d-flex align-items-center text-muted small">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-heart-fill me-1" style="color: #dc3545;" viewBox="0 0 16 16">
-              <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
-            </svg>
-            <span>{{ story.like_count}}</span>
+      
+      <!-- Футер карточки -->
+      <div class="card-footer bg-transparent border-top-0">
+        <div class="d-flex justify-content-between align-items-center">
+          <!-- Блок с автором -->
+          <div class="d-flex align-items-center">
+            <a href="{% url 'blog:user_stories' story.author.username %}" 
+               class="text-decoration-none text-muted small d-flex align-items-center"
+               style="position: relative; z-index: 10;">
+              <img src="{{ story.author.profile.get_avatar_url }}" 
+                   class="rounded-circle me-2" 
+                   width="30" 
+                   height="30" 
+                   alt="Аватар {{ story.author.username }}" 
+                   style="object-fit: cover;">
+              <span>{{ story.author.username }}</span>
+            </a>
           </div>
-         </div>
+          
+          <!-- Блок с датой и лайками -->
+          <div class="d-flex align-items-center gap-2">
+            <small class="text-muted">{{ story.published_at|date:"d M Y" }}</small>
+            <div class="d-flex align-items-center text-muted small">
+              <i class="bi bi-heart-fill me-1 text-danger"></i>
+              <span>{{ story.like_count }}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 {% empty %}
-  <div class="col">
-    <p class="text-center w-100">Здесь пока ничего нет.</p>
+  <div class="col-12">
+    <div class="alert alert-info text-center" role="alert">
+      <i class="bi bi-inbox"></i>
+      <p class="mb-0 mt-2">Здесь пока ничего нет. Станьте первым автором!</p>
+    </div>
   </div>
 {% endfor %}
 </div>
 
 <!-- Блок пагинации -->
 {% if is_paginated and page_obj.paginator.num_pages > 1 %}
-<nav aria-label="Page navigation" class="mt-5">
+<nav aria-label="Навигация по страницам" class="mt-5">
   <ul class="pagination justify-content-center">
 
+    <!-- Первая страница -->
     <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
-      <a class="page-link" href="?page=1">Первая</a>
+      <a class="page-link" href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Первая страница">
+        <span aria-hidden="true">&laquo;&laquo;</span>
+      </a>
     </li>
 
+    <!-- Предыдущая страница -->
     <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
-      <a class="page-link" href="{% if page_obj.has_previous %}?page={{ page_obj.previous_page_number }}{% else %}#{% endif %}">&laquo;</a>
+      <a class="page-link" href="{% if page_obj.has_previous %}?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% else %}#{% endif %}" aria-label="Предыдущая">
+        <span aria-hidden="true">&laquo;</span>
+      </a>
     </li>
 
+    <!-- Номера страниц -->
     {% for num in page_obj.paginator.page_range %}
       {% if num == page_obj.number %}
-        <li class="page-item active" aria-current="page"><span class="page-link">{{ num }}</span></li>
+        <li class="page-item active" aria-current="page">
+          <span class="page-link">{{ num }}</span>
+        </li>
       {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-        <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+        <li class="page-item">
+          <a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a>
+        </li>
       {% endif %}
     {% endfor %}
 
+    <!-- Следующая страница -->
     <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
-      <a class="page-link" href="{% if page_obj.has_next %}?page={{ page_obj.next_page_number }}{% else %}#{% endif %}">&raquo;</a>
+      <a class="page-link" href="{% if page_obj.has_next %}?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% else %}#{% endif %}" aria-label="Следующая">
+        <span aria-hidden="true">&raquo;</span>
+      </a>
     </li>
 
+    <!-- Последняя страница -->
     <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
-      <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Последняя</a>
+      <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Последняя страница">
+        <span aria-hidden="true">&raquo;&raquo;</span>
+      </a>
     </li>
 
   </ul>
+  
+  <!-- Информация о пагинации -->
+  <div class="text-center text-muted small mt-2">
+    Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+    (всего рассказов: {{ page_obj.paginator.count }})
+  </div>
 </nav>
 {% endif %}
