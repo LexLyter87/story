@@ -125,7 +125,7 @@ def add_comment(request, slug):
         comment.story = story
         comment.author = request.user
         comment.save()
-        messages.success(request, "Ваш комментарий добавлен и ожидает модерации.")
+        messages.success(request, "Ваш комментарий добавлен и будет опубликован после проверки модератором.")
     else:
         messages.error(request, "Ошибка при добавлении комментария.")
 

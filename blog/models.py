@@ -11,6 +11,7 @@ from markdownx.models import MarkdownxField
 from markdownx.utils import markdownify
 from django.utils.html import strip_tags
 from django.utils.text import Truncator
+from .validators import FileSizeValidator, validate_image_extension
 
 
 class Category(models.Model):
@@ -33,7 +34,12 @@ class Category(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True, verbose_name='Аватар')
+    avatar = models.ImageField(upload_to='avatars/', 
+                               blank=True, null=True, 
+                               verbose_name='Аватар',
+                               validators=[validate_image_extension, FileSizeValidator(max_size_mb=2)], 
+                               help_text='Максимальный размер: 2 МБ. Форматы: JPG, PNG, WEBP'
+                               )
     bio = models.TextField(max_length=500, blank=True, verbose_name='О себе')
 
     class Meta:
@@ -60,7 +66,12 @@ class Story(models.Model):
     content = MarkdownxField(verbose_name='Содержание')
     excerpt = models.TextField(max_length=300, blank=True, verbose_name='Краткое описание')
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='stories', verbose_name='Категория')
-    cover_image = models.ImageField(upload_to='story_covers/', blank=True, null=True, verbose_name='Обложка')
+    cover_image = models.ImageField(upload_to='story_covers/', 
+                                    blank=True, null=True, 
+                                    verbose_name='Обложка', 
+                                    validators=[validate_image_extension, FileSizeValidator(max_size_mb=5)], 
+                                    help_text='Максимальный размер: 5 МБ. Форматы: JPG, PNG, WEBP'
+                                    )
     cover_image_thumbnail = ImageSpecField(source='cover_image', processors=[ResizeToFill(800, 400)], format='JPEG', options={'quality': 75})
     status = models.CharField(max_length=2, choices=Status.choices, default=Status.DRAFT, verbose_name='Статус', db_index=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Создано')
@@ -87,7 +98,7 @@ class Story(models.Model):
                 self.published_at = timezone.now()
         else:
             if self.pk:
-                old_story =Story.objects.filter(pk=self.pk).first()
+                old_story = Story.objects.filter(pk=self.pk).first()
                 if old_story and old_story.status == self.Status.PUBLISHED:
                     self.published_at = None
         super().save(*args, **kwargs)
@@ -144,7 +155,7 @@ class Comment(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments', verbose_name='Автор')
     content = models.TextField(verbose_name='Комментарий')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Создано')
-    is_active = models.BooleanField(default=True, verbose_name='Активен')
+    is_active = models.BooleanField(default=False, verbose_name='Активен')
 
     class Meta:
         verbose_name = 'Комментарий'
