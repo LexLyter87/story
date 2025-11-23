@@ -4,7 +4,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Story, Comment, Category,Like
+from .models import Story, Category, Like
 from .forms import StoryForm, CommentForm
 from django.views import View
 from .forms import UserRegisterForm, UserEditForm, ProfileEditForm
@@ -13,7 +13,8 @@ from django.contrib.auth.models import User
 from django.views.decorators.http import require_POST
 from django.core.cache import cache
 from django.core.paginator import Paginator
-
+from django_ratelimit.decorators import ratelimit
+from django.views.decorators.cache import cache_page
 
 
 class StoryListView(ListView):
@@ -115,10 +116,14 @@ class StoryDeleteView(LoginRequiredMixin, AuthorRequireMixin, DeleteView):
         return super().form_valid(form)
     
 
+@ratelimit(key='user', rate='5/m', method='POST', block=False)
 @login_required
 @require_POST
 def add_comment(request, slug):
     story = get_object_or_404(Story, slug=slug, status=Story.Status.PUBLISHED)
+    if getattr(request, 'limited', False):
+        messages.error(request, "Слишком много запросов. Пожалуйста, подождите минуту перед добавлением следующего комментария.")
+        return redirect('blog:story_detail', slug=story.slug)
     form = CommentForm(data=request.POST)
     if form.is_valid():
         comment = form.save(commit=False)
@@ -222,9 +227,13 @@ class CategoryStoryListView(ListView):
         return context
 
 
+@ratelimit(key='user', rate='10/m', method='POST', block=False)
 @login_required
 @require_POST
 def toggle_like(request, slug):
+    if getattr(request, 'limited', False):
+        messages.warning(request, "Слишком много действий. Подождите немного перед следующим лайком.")
+        return redirect('blog:story_detail', slug=slug)
     story = get_object_or_404(
         Story,
         slug=slug,

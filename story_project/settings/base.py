@@ -92,6 +92,13 @@ DATABASES = {
     }
 }
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -161,3 +168,7 @@ MARKDOWNX_MARKDOWN_EXTENSIONS = [
 
 MARKDOWNX_MARKDOWN_EXTENSION_CONFIGS = {}
 MARKDOWNX_MEDIA_PATH = 'markdownx/'
+
+
+RATELIMIT_ENABLE = True
+RATELIMIT_USE_CACHE = 'default'
