@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from django.templatetags.static import static
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -36,6 +39,10 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 # Application definition
 
 INSTALLED_APPS = [
+    'unfold',
+    'unfold.contrib.filters',
+    'unfold.contrib.forms',
+    'unfold.contrib.import_export',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -172,3 +179,111 @@ MARKDOWNX_MEDIA_PATH = 'markdownx/'
 
 RATELIMIT_ENABLE = True
 RATELIMIT_USE_CACHE = 'default'
+
+
+UNFOLD = {
+    "SITE_TITLE": "Story Blog Admin",
+    "SITE_HEADER": "Story Blog",
+    "SITE_URL": "/",
+    "SITE_SYMBOL": "📖",  
+    "SHOW_HISTORY": True,  
+    "SHOW_VIEW_ON_SITE": True,  
+    "ENVIRONMENT": "story_project.admin_callbacks.environment_callback",
+    "DASHBOARD_CALLBACK": "story_project.admin_callbacks.dashboard_callback",
+    "LOGIN": {
+        "image": lambda request: static("images/login-bg.jpg"), 
+    },
+    "STYLES": [
+        lambda request: static("css/admin-extra.css"),  
+    ],
+    "COLORS": {
+        "primary": {
+            "50": "250 245 255",
+            "100": "243 232 255",
+            "200": "233 213 255",
+            "300": "216 180 254",
+            "400": "192 132 252",
+            "500": "168 85 247",
+            "600": "147 51 234",
+            "700": "126 34 206",
+            "800": "107 33 168",
+            "900": "88 28 135",
+            "950": "59 7 100",
+        },
+    },
+    "EXTENSIONS": {
+        "modeltranslation": {
+            "flags": {
+                "en": "🇬🇧",
+                "fr": "🇫🇷",
+                "nl": "🇧🇪",
+            },
+        },
+    },
+    "SIDEBAR": {
+        "show_search": True,  
+        "show_all_applications": True,  
+        "navigation": [
+            {
+                "title": _("Навигация"),
+                "separator": True,
+                "items": [
+                    {
+                        "title": _("Dashboard"),
+                        "icon": "dashboard",
+                        "link": reverse_lazy("admin:index"),
+                    },
+                ],
+            },
+            {
+                "title": _("Контент"),
+                "separator": True,
+                "items": [
+                    {
+                        "title": _("Рассказы"),
+                        "icon": "description",
+                        "link": reverse_lazy("admin:blog_story_changelist"),
+                    },
+                    {
+                        "title": _("Категории"),
+                        "icon": "category",
+                        "link": reverse_lazy("admin:blog_category_changelist"),
+                    },
+                    {
+                        "title": _("Комментарии"),
+                        "icon": "comment",
+                        "link": reverse_lazy("admin:blog_comment_changelist"),
+                    },
+                    {
+                        "title": _("Лайки"),
+                        "icon": "favorite",
+                        "link": reverse_lazy("admin:blog_like_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": _("Пользователи"),
+                "separator": True,
+                "items": [
+                    {
+                        "title": _("Пользователи"),
+                        "icon": "people",
+                        "link": reverse_lazy("admin:auth_user_changelist"),
+                    },
+                    {
+                        "title": _("Профили"),
+                        "icon": "account_circle",
+                        "link": reverse_lazy("admin:blog_userprofile_changelist"),
+                    },
+                    {
+                        "title": _("Группы"),
+                        "icon": "group",
+                        "link": reverse_lazy("admin:auth_group_changelist"),
+                    },
+                ],
+            },
+        ],
+    },
+}
+
+
