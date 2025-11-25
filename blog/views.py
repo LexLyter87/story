@@ -15,8 +15,10 @@ from django.core.cache import cache
 from django.core.paginator import Paginator
 from django_ratelimit.decorators import ratelimit
 from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
 
 
+@method_decorator(cache_page(60 * 5), name='dispatch')
 class StoryListView(ListView):
     model = Story
     template_name = 'blog/story_list.html'
@@ -40,7 +42,8 @@ class StoryListView(ListView):
         context['featured_story'] = featured_story
         return context
     
-    
+
+@method_decorator(cache_page(60 * 3), name='dispatch')    
 class StoryDetailView(DetailView):
     model = Story
     template_name = 'blog/story_detail.html'
@@ -211,6 +214,7 @@ class UserStoryListView(ListView):
         return context
     
 
+@method_decorator(cache_page(60 * 5), name='dispatch')
 class CategoryStoryListView(ListView):
     model = Story
     template_name = 'blog/category_stories.html'
